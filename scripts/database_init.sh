@@ -1,7 +1,7 @@
 echo "******************************************************************************"
 echo "Install Oracle RPM." `date`
 echo "******************************************************************************"
-yum -y localinstall /vagrant/ora21c.rpm
+yum -y localinstall https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm
 #yum update -y
 
 export ORACLE_HOME="/opt/oracle/product/21c/dbhomeXE"

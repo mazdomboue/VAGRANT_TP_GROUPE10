@@ -13,7 +13,7 @@
 #
 
 
-#mettr e à jour version java
+#mettre à jour version java
 wget https://download.oracle.com/java/17/archive/jdk-17.0.6_linux-x64_bin.rpm
 sudo yum -y install jdk-17.0.6_linux-x64_bin.rpm
 
@@ -22,11 +22,23 @@ sudo yum -y install jdk-17.0.6_linux-x64_bin.rpm
 . /home/vagrant/.bashrc 
 
 export ORACLE_PWD=MAZ16juin#
-export ORDS_HOME=/home/vagrant/ords
+export ORDS_HOME=/home/vagrant/ords-latest
+export APEX_HOME=/home/vagrant/ords-latest
 
-mkdir -p $ORDS_HOME
+echo 'telecharger dernière version de ords'
+wget https://download.oracle.com/otn_software/java/ords/ords-latest.zip
 
-cp -R /vagrant/ords/*  $ORDS_HOME/
+unzip ords-latest.zip
+rm ords-latest.zip
+cd ords-latest
+
+echo 'recuperation dossier immages de apex'
+wget https://download.oracle.com/otn_software/apex/apex-latest.zip
+unzip apex-latest.zip
+rm apex-latest.zip
+
+mkdir -p $ORDS_HOME/images
+cp -R $APEX_HOME/apex/images/*  $ORDS_HOME/images/
 
 # Configure ORDS
 cat > $ORDS_HOME/params/ords_params.properties << EOF

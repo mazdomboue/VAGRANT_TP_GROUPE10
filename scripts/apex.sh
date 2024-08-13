@@ -1,7 +1,7 @@
  echo 'installation du dictionnaire' 
 
-echo "Create default database." `date`
-echo "******************************************************************************"
+yum -y localinstall https://download.oracle.com/otn-pub/otn_software/db-express/oracle-database-xe-21c-1.0-1.ol7.x86_64.rpm
+
 /etc/init.d/oracle-xe-21c configure <<EOF
 MAZ16juin#
 MAZ16juin#
@@ -10,7 +10,6 @@ EOF
 systemctl enable oracle-xe-21c
 
 echo "repetion de l'operation car peut échouer pour la première fois"
-
 
 /etc/init.d/oracle-xe-21c configure <<EOF
 MAZ16juin#
@@ -31,31 +30,28 @@ export ORACLE_BASE="/opt/oracle"
 export ORACLE_HOME="/opt/oracle/product/21c/dbhomeXE"
 export ORACLE_SID="XE"
 export ORACLE_PDB="XEPDB1"
-export APEX_HOME="/home/oracle/apex"
+export APEX_HOME="/home/vagrant/apex-latest/apex"
 export PATH="\$PATH:\$ORACLE_HOME/bin"
 
 
 echo 'INSTALLER: Updated APEX extracted to the ORACLE_HOME'
 
-# Prepare des tables spaces en extension
-#su -l oracle -c 
-echo 'INSTALLER: $PATH'
-sqlplus / as sysdba <<EOF
-	ALTER DATABASE DATAFILE '$ORACLE_BASE/oradata/$ORACLE_SID/system01.dbf' resize 1024m;
-	ALTER DATABASE DATAFILE '$ORACLE_BASE/oradata/$ORACLE_SID/sysaux01.dbf' resize 1024m;
-	alter session set container=$ORACLE_PDB;
-	CREATE TABLESPACE apex DATAFILE '$ORACLE_BASE/oradata/$ORACLE_SID/$ORACLE_PDB/apex01.dbf'
-        SIZE 300M AUTOEXTEND ON NEXT 1M;
-	exit;
-EOF
 
+echo 'telecharger derniere version de apex et dezipper
+
+wget https://download.oracle.com/otn_software/apex/apex-latest.zip
+unzip apex-latest.zip
+rm apex-latest.zip
+cd apex
+
+chown -R oracle:oinstall $APEX_HOME
 echo 'INSTALLER: APEX tablespaces etendues'
 
 # Install APEX into the PDB Oracle Database
 su -l oracle -c "cd $APEX_HOME; sqlplus / as sysdba <<EOF
 	alter session set container=$ORACLE_PDB;
         ALTER PROFILE DEFAULT LIMIT PASSWORD_LIFE_TIME UNLIMITED;
-	@apexins.sql APEX APEX TEMP /i/
+	@apexins.sql SYSAUX SYSAUX TEMP /i/
 	exit;
 EOF"
 
